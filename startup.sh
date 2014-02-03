@@ -2,12 +2,18 @@
 
 # update the fpm configuration to make the service environment variables available
 function setEnvironmentVariable() {
-	# This is a weird hack, because the php-fpm environment does not see the $MYSQL_PORT_3306_TCP_ADDR variable...
-	if grep -q MYSQL_HOST /etc/php5/fpm/pool.d/www.conf; then
-	        sed -i "s/^env\[$1.*/env[$1] = $2/g" /etc/php5/fpm/pool.d/www.conf
-	else
-	        echo "env[$1] = $2" >> /etc/php5/fpm/pool.d/www.conf
-	fi
+
+        if [ -z "$2" ]; then
+                echo "Environment variable $1 not set."
+                return
+        fi  
+
+        # This is a weird hack, because the php-fpm environment does not see the $MYSQL_PORT_3306_TCP_ADDR variable...
+        if grep -q MYSQL_HOST /etc/php5/fpm/pool.d/www.conf; then
+                sed -i "s/^env\[$1.*/env[$1] = $2/g" /etc/php5/fpm/pool.d/www.conf
+        else
+                echo "env[$1] = $2" >> /etc/php5/fpm/pool.d/www.conf
+        fi  
 }
 
 # set environment variables to other services
