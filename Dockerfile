@@ -13,16 +13,18 @@ RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:nginx/stable
 RUN apt-get update
 
 # Install nginx
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes build-essential
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes nginx-extras
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes nginx
 RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
 # Install PHP
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php5-fpm php5-cli php5-dev php-pear php5-mysqlnd php5-mongo php5-mcrypt php5-gd php5-sqlite php5-curl php5-intl php5-xdebug php5-memcache php5-imagick
-RUN php5enmod mongo
-# php5-redis still not available as ubuntu package
-RUN pecl install redis
-RUN echo "extension=redis.so" > /etc/php5/fpm/conf.d/50-redis.ini
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes php5-fpm php5-cli php5-dev php-pear php5-mysqlnd php5-json php5-mcrypt php5-gd php5-sqlite php5-curl php5-intl php5-xdebug php5-memcache php5-imagick
+
+# Patch php.ini
+RUN echo "date.timezone = 'Europe/Vienna'" >> /etc/php5/fpm/php.ini
+RUN echo "date.timezone = 'Europe/Vienna'" >> /etc/php5/cli/php.ini
+RUN echo "xdebug.max_nesting_level = 400" >> /etc/php5/fpm/php.ini
+RUN echo "xdebug.max_nesting_level = 400" >> /etc/php5/cli/php.ini
+
 
 # Attach volumes. I'm not 100% we really need this yet ;)
 VOLUME /etc/nginx/sites-enabled
